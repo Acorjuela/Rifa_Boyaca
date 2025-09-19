@@ -45,7 +45,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white overflow-x-hidden flex flex-col items-center justify-start pt-8 font-quicksand">
-      <div className="absolute top-0 left-0 w-full h-full bg-main-gradient opacity-80 z-0"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_bottom,#000759,#1b005b)] opacity-80 z-0"></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_rgba(29,78,216,0.15)_0,_transparent_60%)] z-0"></div>
       
       <div className="relative z-10 w-full">
