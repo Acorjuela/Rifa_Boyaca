@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Chelsea+Market&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+  background: #000046;
+  background: -webkit-linear-gradient(to bottom, #000046, #1CB5E0);
+  background: linear-gradient(to bottom, #000046, #1CB5E0);
+  color: #333;
+  height: auto;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #06b6d4; /* cyan-500 */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0891b2; /* cyan-600 */
+}
+
+.fade-scroll {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 1rem, black 90%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 1rem, black 90%, transparent);
+}
+
+
+@layer components {
+  .custom-button {
+    @apply w-56 h-12 bg-gradient-to-r from-blue-800 to-blue-900 rounded-full text-xl text-white relative overflow-hidden z-10 shadow-custom;
+    font-family: 'Chelsea Market', serif;
+    font-weight: 400;
+    border: none;
+    transition: all 0.5s ease;
+  }
+  
+  .custom-button::before {
+    content: '';
+    @apply w-0 h-12 rounded-full absolute top-0 left-0 bg-gradient-to-r from-cyan-400 to-blue-900 transition-all duration-500 ease-in-out block -z-10;
+  }
+  
+  .custom-button:hover::before {
+    @apply w-56;
+  }
+
+  .time-display {
+    @apply relative h-20 w-80 rounded-lg cursor-default;
+    animation: hue-rotate 1.5s linear infinite;
+  }
+
+  .time-display .display {
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 h-16 rounded-md text-center;
+    width: calc(100% - 16px);
+  }
+
+  .time-gradient-text {
+    @apply text-white text-5xl font-semibold tracking-wide;
+    background: linear-gradient(135deg, rgba(4, 0, 255, 1), rgba(136, 0, 255, 1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: hue-rotate 1.5s linear infinite;
+    line-height: 85px;
+  }
+
+  .time-blur-bg {
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-full w-full rounded-lg;
+  }
+
+  .time-blur-1 {
+    filter: blur(7px);
+  }
+
+  .time-blur-2 {
+    filter: blur(20px);
+  }
+
+  .number-circle {
+    @apply flex justify-center items-center w-16 h-16 md:w-20 md:h-20 rounded-full text-2xl md:text-4xl font-bold text-white border-4 border-blue-700;
+    box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+  }
+
+  .modal-dialog {
+    @apply w-full max-w-2xl p-10 mx-auto my-auto overflow-hidden border-8 border-blue-400 rounded-3xl bg-gray-50;
+  }
+
+  .modal-dialog::backdrop {
+    background: rgba(35, 234, 241, 0.432);
+  }
+
+  .animated-title {
+    @apply relative text-4xl md:text-6xl text-white font-bold italic;
+    font-family: "PT Serif", serif;
+    font-weight: 700;
+  }
+
+  .title-wrapper {
+    @apply relative inline-block pt-1 pr-1 pb-3 leading-4;
+  }
+
+  .title-line {
+    @apply absolute left-0 top-0 bottom-0 my-auto h-1 w-full bg-white;
+    transform-origin: 0.5 0;
+  }
+
+  .title-letters {
+    @apply inline-block opacity-100;
+  }
+
+  .title-ampersand {
+    @apply w-8 mx-1;
+    font-family: Baskerville, serif;
+    font-style: italic;
+    font-weight: 400;
+  }
+}
+
+@keyframes hue-rotate {
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-20px);
+    opacity: 0.5;
+  }
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
