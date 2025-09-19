@@ -2,12 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { Ticket } from '../../types';
 import ConfirmationTicket from '../../components/ConfirmationTicket';
-import { Trash2, CheckCircle, Ticket as TicketIcon, DollarSign } from 'lucide-react';
+import { Trash2, CheckCircle, Ticket as TicketIcon, DollarSign, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const DashboardPage: React.FC = () => {
   const { tickets, deleteTicket, toggleTicketApproval } = useAppContext();
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const totals = useMemo(() => {
     const totalTickets = tickets.length;
@@ -21,6 +22,15 @@ const DashboardPage: React.FC = () => {
 
     return { totalTickets, approvedTickets, totalCOP, totalUSD };
   }, [tickets]);
+
+  const filteredTickets = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return tickets;
+    }
+    return tickets.filter(ticket =>
+      `${ticket.nombre} ${ticket.apellido}`.toLowerCase().includes(searchTerm.toLowerCase().trim())
+    );
+  }, [tickets, searchTerm]);
 
   const handleDelete = async (e: React.MouseEvent, id: number) => {
     e.stopPropagation();
@@ -71,7 +81,19 @@ const DashboardPage: React.FC = () => {
       </div>
 
       <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
-        <h2 className="text-2xl font-semibold mb-4">Listado de Tickets ({tickets.length})</h2>
+        <h2 className="text-2xl font-semibold mb-4">Listado de Tickets ({filteredTickets.length})</h2>
+        
+        <div className="relative mb-6">
+          <input
+            type="text"
+            placeholder="Buscar por nombre o apellido..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-sm p-3 pl-10 bg-gray-700 rounded-lg border-2 border-transparent focus:border-cyan-400 focus:outline-none"
+          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+        </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -86,7 +108,7 @@ const DashboardPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {tickets.map((ticket, index) => (
+              {filteredTickets.map((ticket, index) => (
                 <tr key={ticket.id} onClick={() => setSelectedTicket(ticket)} className={`border-b border-gray-700 hover:bg-white/10 cursor-pointer transition-colors ${ticket.is_approved ? 'bg-green-500/10' : ''}`}>
                   <td className="p-3">{index + 1}</td>
                   <td className="p-3">{ticket.nombre} {ticket.apellido}</td>
@@ -110,6 +132,11 @@ const DashboardPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+          {filteredTickets.length === 0 && searchTerm && (
+            <div className="text-center py-8 text-gray-400">
+              <p>No se encontraron tickets que coincidan con "{searchTerm}".</p>
+            </div>
+          )}
         </div>
       </div>
 

@@ -28,8 +28,8 @@ module.exports = {
         }
       },
       backgroundImage: {
-        'main-gradient': 'linear-gradient(to bottom, #0f172a, #0c4a6e)',
-        'reg-gradient': 'linear-gradient(to top, #190A05, #870000)',
+        'main-gradient': 'linear-gradient(to bottom, #000759, #1b005b)',
+        'reg-gradient': 'linear-gradient(to top, #4d02b1, #001187)',
         'button-gradient': 'linear-gradient(69deg, #0004ed 0%, #010cac 100%)',
         'button-hover': 'linear-gradient(to right, #1CB5E0 0%, #000046 100%)',
         'time-gradient': 'linear-gradient(135deg, rgba(4, 0, 255, 1), rgba(136, 0, 255, 1))',

@@ -92,9 +92,9 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
           className="w-full max-w-md md:max-w-4xl mx-auto" 
           onClick={(e) => e.stopPropagation()}
         >
-          <div ref={ticketRef} className="w-full bg-[#00529C] rounded-2xl shadow-2xl text-white flex flex-col md:flex-row overflow-hidden">
+          <div ref={ticketRef} className="w-full rounded-2xl shadow-2xl text-white flex flex-col md:flex-row overflow-hidden" style={{ backgroundImage: 'linear-gradient(to top, #4d02b1, #001187)' }}>
             {/* Stub */}
-            <div className="w-full md:w-1/3 bg-[#00427C] p-6 flex flex-col justify-between items-center relative">
+            <div className="w-full md:w-1/3 p-6 flex flex-col justify-between items-center relative" style={{ backgroundImage: 'linear-gradient(to bottom, #4d02b1, #001187)' }}>
               <div className="transform md:-rotate-90 whitespace-nowrap origin-center mt-4 md:mt-24">
                 <h3 className="text-4xl font-extrabold text-white" style={{ WebkitTextStroke: '1px #ef4444', textShadow: '0 0 5px #ef4444' }}>
                   Gran Rifa

@@ -14,7 +14,7 @@ const Barcode: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-[#4A211F] rounded-lg p-1.5 w-full h-12">
+    <div className="bg-white/[.19] rounded-lg p-1.5 w-full h-12">
       <svg viewBox="0 0 280 40" className="w-full h-full">
         <defs>
           <clipPath id="barcode-clip">

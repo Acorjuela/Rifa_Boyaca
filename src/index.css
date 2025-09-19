@@ -50,8 +50,8 @@ body {
 }
 
 .fade-scroll {
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 1rem, black 90%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, black 1rem, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 1rem, black 100%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 1rem, black 100%, transparent);
 }
 
 
@@ -110,11 +110,11 @@ body {
   }
 
   .modal-dialog {
-    @apply w-full max-w-2xl p-10 mx-auto my-auto overflow-hidden border-8 border-[rgb(17,3,183)] rounded-3xl bg-gray-50;
+    @apply w-full max-w-2xl p-10 mx-auto my-auto overflow-hidden border-8 border-blue-400 rounded-3xl bg-gray-50;
   }
 
   .modal-dialog::backdrop {
-    background: rgb(0 0 0 / 64%);
+    background: rgba(35, 234, 241, 0.432);
   }
 
   .animated-title {

@@ -45,8 +45,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAccept }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-        style={{ background: 'rgba(35, 234, 241, 0.432)' }}
+        className="fixed inset-0 flex items-center justify-center p-4 z-50"
+        style={{ background: 'rgb(0 0 0 / 43%)' }}
         onClick={onClose}
       >
         <motion.dialog
@@ -101,7 +101,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAccept }) => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="confirm bg-orange-400 text-white h-9 px-5 rounded-2xl border-none cursor-pointer flex-1 flex justify-center items-center"
+                className="bg-[#573cfb] text-white h-9 px-5 rounded-2xl border-none cursor-pointer flex-1 flex justify-center items-center"
                 onClick={onAccept}
               >
                 Aceptar

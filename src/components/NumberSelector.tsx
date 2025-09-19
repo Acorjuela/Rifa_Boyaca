@@ -61,7 +61,7 @@ const NumberSelector: React.FC<NumberSelectorProps> = ({ maxNumbers, onNumbersSe
               onClick={() => handleNumberClick(number)}
               disabled={isOccupied}
               className={`flex justify-center items-center p-1 sm:p-2 text-xs font-medium rounded-md sm:rounded-lg cursor-pointer transition-all duration-200 ease-in-out transform
-                ${isSelected ? 'bg-green-500 text-white font-bold shadow-lg shadow-green-500/30 scale-105' : ''}
+                ${isSelected ? 'bg-reg-gradient text-white font-bold shadow-lg shadow-green-500/30 scale-105' : ''}
                 ${isOccupied ? 'bg-red-800/60 text-gray-500 cursor-not-allowed' : 'bg-white/5 hover:scale-105 hover:bg-cyan-500/50 text-white'}
               `}
             >
