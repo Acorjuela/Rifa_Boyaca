@@ -19,7 +19,7 @@
     "canvas-confetti": "^1.9.3",
     "framer-motion": "^12.23.13",
     "html2canvas": "^1.4.1",
-    "lucide-react": "^0.511.0",
+    "lucide-react": "^0.528.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.6.0",
