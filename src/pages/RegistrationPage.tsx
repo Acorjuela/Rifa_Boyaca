@@ -19,6 +19,15 @@ function generateTicketCode(): string {
   return code;
 }
 
+interface UserInfo {
+  nombre: string;
+  apellido: string;
+  ciudad: string;
+  pais: string;
+  whatsapp: string;
+  prize_type: 'cifras' | 'series';
+}
+
 const RegistrationPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
@@ -26,7 +35,7 @@ const RegistrationPage: React.FC = () => {
   const [currentModal, setCurrentModal] = useState<'userInfo' | 'platform' | 'payment' | null>(null);
   const [paymentPlatform, setPaymentPlatform] = useState<'nequi' | 'binance' | null>(null);
   
-  const [userInfo, setUserInfo] = useState<Omit<Ticket, 'id' | 'created_at' | 'reference' | 'numbers' | 'total_value' | 'payment_platform' | 'ticket_code' | 'is_approved'> | null>(null);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [generatedTicketCode, setGeneratedTicketCode] = useState<string>('');
   const [finalTicket, setFinalTicket] = useState<Ticket | null>(null);
   
@@ -49,7 +58,7 @@ const RegistrationPage: React.FC = () => {
     if (isRegisterEnabled) setCurrentModal('userInfo');
   };
 
-  const handleUserInfoSubmit = (formData: { nombre: string; apellido: string; ciudad: string; pais: string; whatsapp: string; }) => {
+  const handleUserInfoSubmit = (formData: UserInfo) => {
     const code = generateTicketCode();
     setGeneratedTicketCode(code);
     setUserInfo(formData);
@@ -76,12 +85,11 @@ const RegistrationPage: React.FC = () => {
       try {
         await addTicket(ticketData);
         
-        // Construct the ticket locally for confirmation display
         const localTicket: Ticket = {
             ...ticketData,
-            id: Date.now(), // Use a temporary ID for the key
-            created_at: new Date().toISOString(), // Use current time
-            is_approved: false, // Default to not approved
+            id: Date.now(),
+            created_at: new Date().toISOString(),
+            is_approved: false,
         };
 
         setFinalTicket(localTicket);

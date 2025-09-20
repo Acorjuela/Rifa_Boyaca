@@ -42,24 +42,24 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate, onComplete }) => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="text-5xl md:text-7xl font-bold tracking-tighter"
+        className="text-4xl sm:text-6xl font-bold tracking-tighter"
       >
         {value.toString().padStart(2, '0')}
       </motion.div>
-      <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-widest">
+      <div className="text-xs sm:text-sm font-semibold text-gray-400 uppercase tracking-widest">
         {label}
       </div>
     </div>
   );
 
   const Separator: React.FC = () => (
-    <div className="text-5xl md:text-7xl font-bold text-cyan-400/50 -mt-2">:</div>
+    <div className="text-4xl sm:text-6xl font-bold text-cyan-400/50 -mt-2">:</div>
   );
 
   return (
-    <div className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-3xl p-6 md:p-10">
-      <h2 className="text-center text-2xl md:text-3xl font-bold mb-6 text-cyan-300">El Sorteo Termina En</h2>
-      <div className="flex items-start justify-center gap-4 md:gap-8">
+    <div className="bg-gray-800/30 backdrop-blur-sm border border-white/10 rounded-3xl p-4 sm:p-6 md:p-10">
+      <h2 className="text-center text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-cyan-300">El Sorteo Termina En</h2>
+      <div className="flex items-start justify-center gap-2 sm:gap-4 md:gap-8">
         <TimeBox value={timeLeft.days} label="Días" />
         <Separator />
         <TimeBox value={timeLeft.hours} label="Horas" />

@@ -12,6 +12,7 @@ export interface Ticket {
   payment_platform: 'nequi' | 'binance';
   ticket_code: string;
   is_approved: boolean;
+  prize_type: 'cifras' | 'series';
 }
 
 export interface User {

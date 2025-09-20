@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import html2canvas from 'html2canvas';
-import { Download } from 'lucide-react';
+import { Download, Ticket as TicketIcon } from 'lucide-react';
 import { Ticket as TicketType } from '../types';
 import { useAppContext } from '../context/AppContext';
 import Barcode from './Barcode';
@@ -74,6 +74,10 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
     if (!code || code.length < 6) return 'xxxxxx';
     return code.slice(0, 6) + 'x'.repeat(code.length - 6);
   };
+  
+  const prizeTitle = ticket.prize_type === 'cifras' 
+    ? settings.winning_numbers.cifrasTitle
+    : settings.winning_numbers.seriesTitle;
 
   return (
     <AnimatePresence>
@@ -89,18 +93,18 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
           animate={{ scale: 1, y: 0, opacity: 1 }} 
           exit={{ scale: 0.8, y: 50, opacity: 0 }} 
           transition={{ type: "spring", damping: 20, stiffness: 300 }} 
-          className="w-full max-w-md md:max-w-4xl mx-auto" 
+          className="w-full max-w-sm md:max-w-4xl mx-auto" 
           onClick={(e) => e.stopPropagation()}
         >
           <div ref={ticketRef} className="w-full rounded-2xl shadow-2xl text-white flex flex-col md:flex-row overflow-hidden" style={{ backgroundImage: 'linear-gradient(to top, #4d02b1, #001187)' }}>
             {/* Stub */}
-            <div className="w-full md:w-1/3 p-6 flex flex-col justify-between items-center relative" style={{ backgroundImage: 'linear-gradient(to bottom, #4d02b1, #001187)' }}>
-              <div className="transform md:-rotate-90 whitespace-nowrap origin-center mt-4 md:mt-24">
-                <h3 className="text-4xl font-extrabold text-white" style={{ WebkitTextStroke: '1px #ef4444', textShadow: '0 0 5px #ef4444' }}>
+            <div className="w-full md:w-1/3 p-4 flex flex-col justify-between items-center relative" style={{ backgroundImage: 'linear-gradient(to bottom, #4d02b1, #001187)' }}>
+              <div className="transform md:-rotate-90 md:whitespace-nowrap origin-center mt-4 md:mt-24">
+                <h3 className="text-xl md:text-4xl font-extrabold text-white" style={{ WebkitTextStroke: '1px #ef4444', textShadow: '0 0 5px #ef4444' }}>
                   Gran Rifa
                 </h3>
               </div>
-              <div className="space-y-4 text-center text-sm mt-4 md:mt-0">
+              <div className="space-y-2 text-center text-xs mt-4 md:mt-0">
                 <div>
                   <p>FECHA: {formattedDate}</p>
                   <p>Hora del Sorteo: {formattedTime}</p>
@@ -108,7 +112,7 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
                 <div>
                   <p>NÚMEROS: {ticket.numbers.map(n => n.toString().padStart(3, '0')).join(' ')}</p>
                 </div>
-                <div className="w-full">
+                <div className="w-full pt-2">
                   <Barcode />
                 </div>
               </div>
@@ -118,19 +122,22 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
             <div className="border-b-2 md:border-b-0 md:border-l-2 border-dashed border-white/30"></div>
 
             {/* Main Body */}
-            <div className="w-full md:w-2/3 p-6 flex flex-col justify-between">
+            <div className="w-full md:w-2/3 p-4 flex flex-col justify-between">
               <div>
-                <h2 className="text-4xl font-extrabold text-white mb-4" style={{ WebkitTextStroke: '1px #ef4444', textShadow: '0 0 5px #ef4444' }}>
-                  Gran Rifa
-                </h2>
-                <div className="flex justify-between text-sm border-b border-white/20 pb-2">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl md:text-4xl font-extrabold text-white" style={{ WebkitTextStroke: '1px #ef4444', textShadow: '0 0 5px #ef4444' }}>
+                    Gran Rifa
+                  </h2>
+                  <TicketIcon size={32} className="text-yellow-400" />
+                </div>
+                <div className="flex justify-between text-xs border-b border-white/20 pb-2">
                   <span>TICKET</span>
                   <span>Serie: {ticket.payment_platform.toUpperCase()}</span>
                   <span>Nº: {formatSecureTicketId(ticket.ticket_code)}</span>
                 </div>
                 
                 <div className="bg-white text-black p-4 rounded-md mt-4 flex justify-between items-start">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs sm:text-sm w-full">
                     <div>
                       <p className="text-gray-600">COMPRADOR</p>
                       <p className="font-bold">{ticket.nombre} {ticket.apellido}</p>
@@ -147,13 +154,17 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
                       <p className="text-gray-600">WHATSAPP</p>
                       <p className="font-bold">{ticket.whatsapp}</p>
                     </div>
+                     <div className="col-span-1 sm:col-span-2">
+                      <p className="text-gray-600">JUEGA POR</p>
+                      <p className="font-bold capitalize">{prizeTitle}</p>
+                    </div>
                   </div>
-                  <p className="text-4xl font-bold text-red-600 text-right shrink-0 ml-4">
+                  <p className="text-lg md:text-3xl font-bold text-red-600 text-right shrink-0 ml-4">
                     {ticketValueFormatted}
                   </p>
                 </div>
 
-                <div className="flex justify-between text-sm mt-4">
+                <div className="flex flex-wrap justify-between text-xs gap-2 mt-4">
                   <span>FECHA: <span className="font-bold">{formattedDate}</span></span>
                   <span>Hora del Sorteo: <span className="font-bold">{formattedTime}</span></span>
                   <span>{paymentInfo.label}: <span className="font-bold">{ticket.reference}</span></span>
@@ -163,9 +174,9 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
                 </div>
               </div>
               
-              <div className="flex justify-around items-end mt-6">
+              <div className="flex justify-around items-end flex-wrap gap-4 mt-6">
                 {prizes.filter(p => p.enabled && p.url).map((prize, index) => (
-                    <img key={index} src={prize.url!} alt={`Premio ${index + 1}`} className="h-14 md:h-20 object-contain" />
+                    <img key={index} src={prize.url!} alt={`Premio ${index + 1}`} className="h-12 md:h-16 object-contain" />
                 ))}
               </div>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
-import { Clock, Info } from 'lucide-react';
+import { Clock, Info, QrCode } from 'lucide-react';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -89,26 +89,33 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onPaymentS
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 font-quicksand" onClick={onClose}>
-        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} transition={{ type: "spring", damping: 20 }} className="bg-gray-800 text-white border-2 border-cyan-400 rounded-3xl shadow-lg text-center w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 font-quicksand" onClick={onClose}>
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="bg-white rounded-2xl shadow-2xl text-gray-800 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
           <div className="p-8 space-y-6">
-            <h2 className="text-2xl font-bold text-cyan-300">Completa tu Pago ({platform})</h2>
-            <div className="flex items-center justify-center gap-2 text-lg font-semibold bg-gray-700/50 px-4 py-2 rounded-lg">
-              <Clock className="text-cyan-400" size={24} />
+            <h2 className="text-2xl font-bold text-cyan-500 text-center">Completa tu Pago</h2>
+            <div className="flex items-center justify-center gap-2 text-lg font-semibold bg-gray-100 text-gray-700 px-4 py-2 rounded-xl border border-gray-200">
+              <Clock className="text-cyan-500" size={24} />
               <span>Tiempo restante: {formatTime(timeLeft)}</span>
             </div>
-            <p>Escanea el código QR para pagar <strong className="text-cyan-300">{formatCurrency(currentConfig.amount, currentConfig.currency)}</strong>.</p>
-            <div className="p-2 bg-white rounded-lg inline-block">
-              <img src={currentConfig.qrUrl} alt={`QR Code para pago ${platform}`} className="w-48 h-48" />
+            <p className="text-center">Escanea el código QR para pagar <strong className="text-indigo-600">{formatCurrency(currentConfig.amount, currentConfig.currency)}</strong>.</p>
+            <div className="text-center">
+              <div className="p-2 bg-white rounded-lg inline-block shadow-lg border">
+                <img src={currentConfig.qrUrl} alt={`QR Code para pago ${platform}`} className="w-48 h-48" />
+              </div>
             </div>
             <div>
-              <label htmlFor="reference" className="block text-sm font-medium mb-2 text-left">{currentConfig.label}</label>
-              <input type="text" id="reference" value={reference} onChange={(e) => { setReference(e.target.value); validateReference(e.target.value); }} className="w-full p-2 bg-gray-700 rounded-lg border-2 border-transparent focus:border-cyan-400 focus:outline-none" placeholder={currentConfig.placeholder} autoComplete="off" />
-              {error && <p className="text-red-400 text-xs mt-1 text-left flex items-center gap-1"><Info size={14}/> {error}</p>}
+              <label htmlFor="reference" className="block text-sm font-medium mb-2 text-left text-gray-600">{currentConfig.label}</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <QrCode className="text-gray-400" size={20}/>
+                </div>
+                <input type="text" id="reference" value={reference} onChange={(e) => { setReference(e.target.value); validateReference(e.target.value); }} className="w-full pl-10 pr-4 py-3 bg-white rounded-lg border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors" placeholder={currentConfig.placeholder} autoComplete="off" />
+              </div>
+              {error && <p className="text-red-500 text-xs mt-1 text-left flex items-center gap-1"><Info size={14}/> {error}</p>}
             </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <button onClick={handleConfirm} disabled={isButtonDisabled} className="py-2.5 px-5 rounded-xl border-none cursor-pointer bg-green-500 text-white hover:enabled:bg-green-600 flex-1 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">Confirmar Pago</button>
-              <button onClick={onClose} className="py-2.5 px-5 rounded-xl border-none cursor-pointer bg-red-500 text-white hover:bg-red-600 flex-1 transition-colors">Cancelar</button>
+            <div className="flex flex-col sm:flex-row justify-between gap-4 mt-4">
+              <button onClick={handleConfirm} disabled={isButtonDisabled} className="w-full py-3 font-bold text-white bg-green-600 rounded-lg hover:enabled:bg-green-700 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">Confirmar Pago</button>
+              <button onClick={onClose} className="w-full py-3 font-bold text-gray-500 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">Cancelar</button>
             </div>
           </div>
         </motion.div>
