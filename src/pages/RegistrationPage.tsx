@@ -74,8 +74,17 @@ const RegistrationPage: React.FC = () => {
       };
       
       try {
-        const newTicket = await addTicket(ticketData);
-        setFinalTicket(newTicket);
+        await addTicket(ticketData);
+        
+        // Construct the ticket locally for confirmation display
+        const localTicket: Ticket = {
+            ...ticketData,
+            id: Date.now(), // Use a temporary ID for the key
+            created_at: new Date().toISOString(), // Use current time
+            is_approved: false, // Default to not approved
+        };
+
+        setFinalTicket(localTicket);
       } catch (error: any) {
         toast.error(`Error al guardar el ticket: ${error.message}`);
       }

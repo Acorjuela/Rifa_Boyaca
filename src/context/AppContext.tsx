@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Ticket, User, PackageOption, Settings, Prize } from '../types';
 import { supabase } from '../supabaseClient';
 import toast from 'react-hot-toast';
@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 interface AppContextType {
   isLoading: boolean;
   tickets: Ticket[];
-  addTicket: (ticket: Omit<Ticket, 'id' | 'created_at' | 'is_approved'>) => Promise<Ticket>;
+  addTicket: (ticket: Omit<Ticket, 'id' | 'created_at' | 'is_approved'>) => Promise<void>;
   deleteTicket: (id: number) => Promise<void>;
   toggleTicketApproval: (id: number) => Promise<void>;
   occupiedNumbers: number[];
@@ -32,29 +32,48 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [packages, setPackages] = useState<PackageOption[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [occupiedNumbers, setOccupiedNumbers] = useState<number[]>([]);
 
-  const occupiedNumbers = useMemo(() => tickets.flatMap(t => t.numbers), [tickets]);
   const isAuthenticated = !!user;
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [settingsRes, packagesRes, ticketsRes, prizesRes] = await Promise.all([
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Fetch public data that everyone can access
+      const [settingsRes, packagesRes, prizesRes] = await Promise.all([
         supabase.from('settings').select('*').single(),
         supabase.from('packages').select('*').order('id'),
-        supabase.from('tickets').select('*').order('created_at', { ascending: false }),
         supabase.from('prizes').select('*').order('id'),
       ]);
 
       if (settingsRes.error) throw settingsRes.error;
       if (packagesRes.error) throw packagesRes.error;
-      if (ticketsRes.error) throw ticketsRes.error;
       if (prizesRes.error) throw prizesRes.error;
 
       setSettings(settingsRes.data);
       setPackages(packagesRes.data);
-      setTickets(ticketsRes.data);
       setPrizes(prizesRes.data);
+
+      // Fetch occupied numbers and tickets based on authentication
+      if (session?.user) {
+        // Admin is logged in, fetch full tickets
+        const { data: ticketsData, error: ticketsError } = await supabase
+          .from('tickets')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (ticketsError) throw ticketsError;
+        const allTickets = ticketsData || [];
+        setTickets(allTickets);
+        setOccupiedNumbers(allTickets.flatMap(t => t.numbers));
+      } else {
+        // Public user, call the secure RPC function
+        const { data: occupiedData, error: rpcError } = await supabase.rpc('get_occupied_numbers');
+        if (rpcError) throw rpcError;
+        setOccupiedNumbers(occupiedData || []);
+        setTickets([]); // Keep tickets list empty for public users
+      }
 
     } catch (error: any) {
       console.error("Error fetching data:", error);
@@ -65,22 +84,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser({ id: session.user.id, email: session.user.email });
-      }
-      fetchData(); // Fetch data after checking user
-    };
+    // Initial fetch
+    fetchData();
 
-    checkUser();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    // Listen for auth changes and re-fetch data
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user;
       setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null);
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-        fetchData(); // Re-fetch data on auth change
-      }
+      // Re-fetch all data to get correct permissions (tickets vs. no tickets)
+      fetchData();
     });
 
     return () => {
@@ -98,18 +110,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (error) throw error;
   };
 
-  const addTicket = async (ticketData: Omit<Ticket, 'id' | 'created_at' | 'is_approved'>): Promise<Ticket> => {
-    const { data, error } = await supabase.from('tickets').insert([ticketData]).select().single();
+  const addTicket = async (ticketData: Omit<Ticket, 'id' | 'created_at' | 'is_approved'>): Promise<void> => {
+    const { error } = await supabase.from('tickets').insert([ticketData]);
     if (error) throw error;
-    if (!data) throw new Error("Failed to create ticket.");
-    setTickets(prev => [data, ...prev]);
-    return data;
+    // After adding a ticket, update the occupied numbers locally.
+    // This is more efficient and avoids re-fetching all data which can cause permission errors for anon users.
+    setOccupiedNumbers(prev => [...prev, ...ticketData.numbers]);
   };
   
   const deleteTicket = async (id: number) => {
     const { error } = await supabase.from('tickets').delete().match({ id });
     if (error) throw error;
     setTickets(prev => prev.filter(ticket => ticket.id !== id));
+    // After deleting a ticket, refresh the occupied numbers
+    fetchData();
   };
 
   const toggleTicketApproval = async (id: number) => {
@@ -159,7 +173,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   return (
     <AppContext.Provider value={value}>
-      {isLoading ? <div className="fixed inset-0 bg-gray-900 flex items-center justify-center text-white text-xl">Cargando...</div> : children}
+      {isLoading && !settings ? <div className="fixed inset-0 bg-gray-900 flex items-center justify-center text-white text-xl">Cargando...</div> : children}
     </AppContext.Provider>
   );
 };
