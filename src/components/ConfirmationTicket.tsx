@@ -23,15 +23,11 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
       const colors = ['#a78bfa', '#60a5fa', '#22d3ee', '#f472b6'];
 
       (function frame() {
-        // left side
         confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors, zIndex: 200 });
-        // right side
         confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors, zIndex: 200 });
-
         if (Date.now() < end) requestAnimationFrame(frame);
       })();
 
-      // center burst
       setTimeout(() => {
         if (confetti) {
           confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: colors, zIndex: 200 });
@@ -79,6 +75,14 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
     ? settings.winning_numbers.cifrasTitle
     : settings.winning_numbers.seriesTitle;
 
+  const ticketGradient = {
+    backgroundImage: `linear-gradient(to top, ${settings?.colors?.ticket?.from || '#4d02b1'}, ${settings?.colors?.ticket?.to || '#001187'})`
+  };
+
+  const ticketStubGradient = {
+    backgroundImage: `linear-gradient(to bottom, ${settings?.colors?.ticket?.from || '#4d02b1'}, ${settings?.colors?.ticket?.to || '#001187'})`
+  };
+
   return (
     <AnimatePresence>
       <motion.div 
@@ -96,9 +100,8 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
           className="w-full max-w-sm md:max-w-4xl mx-auto" 
           onClick={(e) => e.stopPropagation()}
         >
-          <div ref={ticketRef} className="w-full rounded-2xl shadow-2xl text-white flex flex-col md:flex-row overflow-hidden" style={{ backgroundImage: 'linear-gradient(to top, #4d02b1, #001187)' }}>
-            {/* Stub */}
-            <div className="w-full md:w-1/3 p-4 flex flex-col justify-between items-center relative" style={{ backgroundImage: 'linear-gradient(to bottom, #4d02b1, #001187)' }}>
+          <div ref={ticketRef} className="w-full rounded-2xl shadow-2xl text-white flex flex-col md:flex-row overflow-hidden" style={ticketGradient}>
+            <div className="w-full md:w-1/3 p-4 flex flex-col justify-between items-center relative" style={ticketStubGradient}>
               <div className="transform md:-rotate-90 md:whitespace-nowrap origin-center mt-4 md:mt-24">
                 <h3 className="text-xl md:text-4xl font-extrabold text-white" style={{ WebkitTextStroke: '1px #ef4444', textShadow: '0 0 5px #ef4444' }}>
                   Gran Rifa
@@ -118,10 +121,8 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
               </div>
             </div>
 
-            {/* Perforated Line */}
             <div className="border-b-2 md:border-b-0 md:border-l-2 border-dashed border-white/30"></div>
 
-            {/* Main Body */}
             <div className="w-full md:w-2/3 p-4 flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center mb-4">
@@ -182,7 +183,6 @@ const ConfirmationTicket: React.FC<{ isOpen: boolean; onClose: () => void; ticke
             </div>
           </div>
           
-          {/* Action Buttons */}
           <div className="mt-6 flex flex-col gap-3">
             <button onClick={handleDownload} className="w-full py-3 px-6 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
               <Download size={18} /> Descargar Ticket

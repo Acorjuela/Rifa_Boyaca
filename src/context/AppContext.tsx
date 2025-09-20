@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { Ticket, User, PackageOption, Settings, Prize } from '../types';
+import { Ticket, User, PackageOption, Settings, Prize, Notification } from '../types';
 import { supabase } from '../supabaseClient';
 import toast from 'react-hot-toast';
 
@@ -16,6 +16,11 @@ interface AppContextType {
   updatePackages: (packagesToUpdate: PackageOption[]) => Promise<void>;
   prizes: Prize[];
   updatePrizes: (prizesToUpdate: Prize[]) => Promise<void>;
+  notifications: Notification[];
+  addNotification: (notification: Omit<Notification, 'id' | 'created_at' | 'display_order'>) => Promise<void>;
+  updateNotification: (id: number, updates: Partial<Notification>) => Promise<void>;
+  deleteNotification: (id: number) => Promise<void>;
+  reorderNotifications: (notifications: Notification[]) => Promise<void>;
   uploadFile: (file: File, bucket: string, path: string) => Promise<string | null>;
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
@@ -32,6 +37,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [packages, setPackages] = useState<PackageOption[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [occupiedNumbers, setOccupiedNumbers] = useState<number[]>([]);
 
   const isAuthenticated = !!user;
@@ -41,38 +47,34 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Fetch public data that everyone can access
-      const [settingsRes, packagesRes, prizesRes] = await Promise.all([
+      const [settingsRes, packagesRes, prizesRes, notificationsRes] = await Promise.all([
         supabase.from('settings').select('*').single(),
         supabase.from('packages').select('*').order('id'),
         supabase.from('prizes').select('*').order('id'),
+        supabase.from('notifications').select('*').order('display_order'),
       ]);
 
       if (settingsRes.error) throw settingsRes.error;
       if (packagesRes.error) throw packagesRes.error;
       if (prizesRes.error) throw prizesRes.error;
+      if (notificationsRes.error) throw notificationsRes.error;
 
       setSettings(settingsRes.data);
       setPackages(packagesRes.data);
       setPrizes(prizesRes.data);
+      setNotifications(notificationsRes.data);
 
-      // Fetch occupied numbers and tickets based on authentication
       if (session?.user) {
-        // Admin is logged in, fetch full tickets
-        const { data: ticketsData, error: ticketsError } = await supabase
-          .from('tickets')
-          .select('*')
-          .order('created_at', { ascending: false });
+        const { data: ticketsData, error: ticketsError } = await supabase.from('tickets').select('*').order('created_at', { ascending: false });
         if (ticketsError) throw ticketsError;
         const allTickets = ticketsData || [];
         setTickets(allTickets);
         setOccupiedNumbers(allTickets.flatMap(t => t.numbers));
       } else {
-        // Public user, call the secure RPC function
         const { data: occupiedData, error: rpcError } = await supabase.rpc('get_occupied_numbers');
         if (rpcError) throw rpcError;
         setOccupiedNumbers(occupiedData || []);
-        setTickets([]); // Keep tickets list empty for public users
+        setTickets([]);
       }
 
     } catch (error: any) {
@@ -84,14 +86,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   useEffect(() => {
-    // Initial fetch
     fetchData();
-
-    // Listen for auth changes and re-fetch data
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user;
       setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null);
-      // Re-fetch all data to get correct permissions (tickets vs. no tickets)
       fetchData();
     });
 
@@ -99,6 +97,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       authListener.subscription.unsubscribe();
     };
   }, [fetchData]);
+
+  useEffect(() => {
+    const favicon = document.getElementById('favicon') as HTMLLinkElement | null;
+    if (favicon && settings?.logo_url) {
+      favicon.href = settings.logo_url;
+    }
+  }, [settings?.logo_url]);
 
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -113,8 +118,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const addTicket = async (ticketData: Omit<Ticket, 'id' | 'created_at' | 'is_approved'>): Promise<void> => {
     const { error } = await supabase.from('tickets').insert([ticketData]);
     if (error) throw error;
-    // After adding a ticket, update the occupied numbers locally.
-    // This is more efficient and avoids re-fetching all data which can cause permission errors for anon users.
     setOccupiedNumbers(prev => [...prev, ...ticketData.numbers]);
   };
   
@@ -122,7 +125,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const { error } = await supabase.from('tickets').delete().match({ id });
     if (error) throw error;
     setTickets(prev => prev.filter(ticket => ticket.id !== id));
-    // After deleting a ticket, refresh the occupied numbers
     fetchData();
   };
 
@@ -155,9 +157,38 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const uploadFile = async (file: File, bucket: string, path: string): Promise<string | null> => {
     const { error: uploadError } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
     if (uploadError) throw uploadError;
-
     const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
     return urlData.publicUrl;
+  };
+
+  // Notification Functions
+  const addNotification = async (notification: Omit<Notification, 'id' | 'created_at' | 'display_order'>) => {
+    const maxOrder = notifications.reduce((max, n) => Math.max(max, n.display_order), 0);
+    const { data, error } = await supabase.from('notifications').insert([{ ...notification, display_order: maxOrder + 1 }]).select().single();
+    if (error) throw error;
+    if (data) setNotifications(prev => [...prev, data]);
+  };
+
+  const updateNotification = async (id: number, updates: Partial<Notification>) => {
+    const { data, error } = await supabase.from('notifications').update(updates).eq('id', id).select().single();
+    if (error) throw error;
+    if (data) setNotifications(prev => prev.map(n => n.id === id ? data : n));
+  };
+
+  const deleteNotification = async (id: number) => {
+    const { error } = await supabase.from('notifications').delete().eq('id', id);
+    if (error) throw error;
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const reorderNotifications = async (reorderedNotifications: Notification[]) => {
+    setNotifications(reorderedNotifications); // Optimistic update
+    const updates = reorderedNotifications.map((n, index) => ({ id: n.id, display_order: index }));
+    const { error } = await supabase.from('notifications').upsert(updates);
+    if (error) {
+      toast.error('Error al reordenar. Recargando...');
+      fetchData(); // Revert on error
+    }
   };
 
   const value = {
@@ -167,6 +198,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     settings, updateSettings,
     packages, updatePackages,
     prizes, updatePrizes,
+    notifications, addNotification, updateNotification, deleteNotification, reorderNotifications,
     uploadFile,
     user, login, logout, isAuthenticated,
   };

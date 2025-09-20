@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -7,12 +7,20 @@ import Header from '../components/Header';
 import Countdown from '../components/Countdown';
 import Modal from '../components/Modal';
 import WinnerDisplay from '../components/WinnerDisplay';
+import NotificationModal from '../components/NotificationModal';
 import { ArrowRight, Lock } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const navigate = useNavigate();
-  const { settings, packages } = useAppContext();
+  const { settings, packages, notifications, isLoading } = useAppContext();
+
+  useEffect(() => {
+    if (!isLoading && notifications && notifications.some(n => n.is_enabled)) {
+      setIsNotificationModalOpen(true);
+    }
+  }, [notifications, isLoading]);
 
   const handleAccept = useCallback(() => {
     setIsModalOpen(false);
@@ -20,11 +28,19 @@ const HomePage: React.FC = () => {
   }, [navigate]);
 
   if (!settings || !packages) {
-    return <div className="bg-gray-900 min-h-screen"></div>; // Or a more sophisticated loading state
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
+        Cargando...
+      </div>
+    );
   }
 
   const targetDate = new Date(settings.raffle_date).getTime();
   const isRaffleEnded = new Date().getTime() > targetDate;
+  
+  const homeGradient = {
+    backgroundImage: `linear-gradient(to bottom, ${settings?.colors?.home?.from || '#000759'}, ${settings?.colors?.home?.to || '#1b005b'})`
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -45,7 +61,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white overflow-x-hidden flex flex-col items-center justify-start pt-8 font-quicksand">
-      <div className="absolute top-0 left-0 w-full h-full bg-main-gradient opacity-80 z-0"></div>
+      <div className="absolute top-0 left-0 w-full h-full opacity-80 z-0" style={homeGradient}></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_rgba(29,78,216,0.15)_0,_transparent_60%)] z-0"></div>
       
       <div className="relative z-10 w-full">
@@ -58,7 +74,6 @@ const HomePage: React.FC = () => {
             initial="hidden"
             animate="visible"
           >
-            {/* Hero Section */}
             <motion.div variants={itemVariants} className="text-center flex flex-col items-center mt-12 md:mt-20">
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400">
                 La Rifa que Cambia Vidas
@@ -82,14 +97,12 @@ const HomePage: React.FC = () => {
               )}
             </motion.div>
 
-            {/* Countdown Section */}
             {!isRaffleEnded && (
               <motion.div variants={itemVariants} className="w-full max-w-4xl">
                 <Countdown targetDate={targetDate} onComplete={() => {}} />
               </motion.div>
             )}
 
-            {/* Winners Section */}
             <motion.div variants={itemVariants} className="w-full max-w-4xl mt-12">
               <WinnerDisplay />
             </motion.div>
@@ -101,6 +114,10 @@ const HomePage: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAccept={handleAccept}
+      />
+      <NotificationModal 
+        isOpen={isNotificationModalOpen}
+        onClose={() => setIsNotificationModalOpen(false)}
       />
     </div>
   );

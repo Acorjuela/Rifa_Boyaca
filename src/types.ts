@@ -51,6 +51,17 @@ export interface Prize {
   enabled: boolean;
 }
 
+export interface GradientColors {
+  from: string;
+  to: string;
+}
+
+export interface AppColors {
+  home: GradientColors;
+  reg: GradientColors;
+  ticket: GradientColors;
+}
+
 export interface Settings {
   id: number;
   raffle_date: string;
@@ -60,4 +71,15 @@ export interface Settings {
   payment_options: { nequi: PaymentPlatform; binance: PaymentPlatform };
   logo_url: string | null;
   winning_numbers: WinningNumbers;
+  colors: AppColors;
+}
+
+export interface Notification {
+  id: number;
+  title: string;
+  description: string;
+  video_url: string | null;
+  is_enabled: boolean;
+  display_order: number;
+  created_at: string;
 }

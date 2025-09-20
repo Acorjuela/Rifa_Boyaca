@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
     "@supabase/supabase-js": "^2.57.4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/html2canvas": "^1.0.0",
     "@types/node": "^24.5.1",
+    "@types/react-color": "^3.0.13",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.9.0",
     "canvas-confetti": "^1.9.3",
@@ -21,13 +23,14 @@
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.528.0",
     "react": "^19.1.0",
+    "react-color": "^2.19.3",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.9.1"
   },
   "devDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.18.1",
     "@eslint/js": "^9.27.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.18.1",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.0",

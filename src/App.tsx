@@ -16,6 +16,8 @@ import PrivateRoute from './components/admin/PrivateRoute';
 import LogoPage from './pages/admin/LogoPage';
 import NumbersPage from './pages/admin/NumbersPage';
 import PrizesPage from './pages/admin/PrizesPage';
+import ColorsPage from './pages/admin/ColorsPage';
+import NotificationsPage from './pages/admin/NotificationsPage';
 import SecurityLayer from './components/SecurityLayer';
 
 function App() {
@@ -48,6 +50,8 @@ function App() {
               <Route path="logo" element={<LogoPage />} />
               <Route path="numbers" element={<NumbersPage />} />
               <Route path="prizes" element={<PrizesPage />} />
+              <Route path="colors" element={<ColorsPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
             </Route>
           </Routes>
         </Router>

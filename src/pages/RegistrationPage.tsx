@@ -115,9 +115,13 @@ const RegistrationPage: React.FC = () => {
   };
 
   if (!settings) return null;
+  
+  const regGradient = {
+    backgroundImage: `linear-gradient(to top, ${settings?.colors?.reg?.from || '#4d02b1'}, ${settings?.colors?.reg?.to || '#001187'})`
+  };
 
   return (
-    <section className="font-quicksand text-white min-h-screen w-full flex justify-center items-center p-4 bg-reg-gradient">
+    <section className="font-quicksand text-white min-h-screen w-full flex justify-center items-center p-4" style={regGradient}>
       <video autoPlay muted loop id="video-bg" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover z-0">
         <source src="https://cdn.pixabay.com/vimeo/215697/small.mp4" type="video/mp4" />
       </video>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Settings, Home, Ticket, Trophy, LogOut, Package, ImageIcon, Grid3x3, Gift } from 'lucide-react';
+import { LayoutDashboard, Settings, Home, Ticket, Trophy, LogOut, Package, ImageIcon, Grid3x3, Gift, Palette, Bell } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
 const Sidebar: React.FC = () => {
@@ -43,6 +43,14 @@ const Sidebar: React.FC = () => {
         <NavLink to="/admin/logo" className={({ isActive }) => `flex items-center p-3 rounded-lg transition-colors ${ isActive ? 'bg-cyan-500/20 text-cyan-300' : 'hover:bg-gray-700' }`}>
           <ImageIcon className="h-6 w-6" />
           <span className="hidden sm:block ml-4 font-semibold">Logo</span>
+        </NavLink>
+        <NavLink to="/admin/colors" className={({ isActive }) => `flex items-center p-3 rounded-lg transition-colors ${ isActive ? 'bg-cyan-500/20 text-cyan-300' : 'hover:bg-gray-700' }`}>
+          <Palette className="h-6 w-6" />
+          <span className="hidden sm:block ml-4 font-semibold">Colores</span>
+        </NavLink>
+        <NavLink to="/admin/notifications" className={({ isActive }) => `flex items-center p-3 rounded-lg transition-colors ${ isActive ? 'bg-cyan-500/20 text-cyan-300' : 'hover:bg-gray-700' }`}>
+          <Bell className="h-6 w-6" />
+          <span className="hidden sm:block ml-4 font-semibold">Notificaciones</span>
         </NavLink>
         <NavLink to="/admin/settings" className={({ isActive }) => `flex items-center p-3 rounded-lg transition-colors ${ isActive ? 'bg-cyan-500/20 text-cyan-300' : 'hover:bg-gray-700' }`}>
           <Settings className="h-6 w-6" />
