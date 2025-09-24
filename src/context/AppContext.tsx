@@ -103,6 +103,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (favicon && settings?.logo_url) {
       favicon.href = settings.logo_url;
     }
+    
+    // Update meta tags for social sharing
+    const ogImage = document.getElementById('og-image') as HTMLMetaElement | null;
+    const twitterImage = document.getElementById('twitter-image') as HTMLMetaElement | null;
+    if (settings?.logo_url) {
+      if (ogImage) ogImage.content = settings.logo_url;
+      if (twitterImage) twitterImage.content = settings.logo_url;
+    }
+
   }, [settings?.logo_url]);
 
   const login = async (email: string, password: string) => {

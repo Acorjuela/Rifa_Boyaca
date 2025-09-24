@@ -15,9 +15,9 @@ const Header: React.FC = () => {
       <div className="logo flex items-center justify-center">
         <img 
           id="loteria"
-          src={settings?.logo_url || "https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/120x120.png"} 
+          src={settings?.logo_url || "https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://img-wrapper.vercel.app/image?url=https://placehold.co/120x120.png"} 
           alt="Logo Rifas de Boyacá" 
-          className="w-full h-auto block mx-auto max-w-32 md:max-w-40"
+          className="w-full h-auto block mx-auto max-w-64 md:max-w-80"
         />
       </div>
     </motion.header>

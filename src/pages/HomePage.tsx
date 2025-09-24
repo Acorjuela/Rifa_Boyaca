@@ -74,7 +74,7 @@ const HomePage: React.FC = () => {
             initial="hidden"
             animate="visible"
           >
-            <motion.div variants={itemVariants} className="text-center flex flex-col items-center mt-12 md:mt-20">
+            <motion.div variants={itemVariants} className="text-center flex flex-col items-center">
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400">
                 La Rifa que Cambia Vidas
               </h1>
